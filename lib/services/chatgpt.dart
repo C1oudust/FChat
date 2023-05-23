@@ -5,7 +5,7 @@ import '../env.dart';
 class ChatGPTService {
   final client = OpenaiClient(
     config: OpenaiConfig(
-      apiKey: Env.apiKey, // 你的key
+      apiKey: Env.apiKey,
       // baseUrl: "",  // 如果有自建OpenAI服务请设置这里
       httpProxy: Env.httpProxy,  // 代理服务地址
     ),
