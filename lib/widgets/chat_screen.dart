@@ -46,7 +46,7 @@ class ChatScreen extends HookConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            const Expanded(
+            Expanded(
               child: ChatMessageList()
             ),
             TextField(
