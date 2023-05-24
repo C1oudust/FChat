@@ -3,7 +3,7 @@ import 'package:flutter_chatgpt_app/models/message.dart';
 import 'package:flutter_chatgpt_app/injection.dart';
 import 'package:flutter_chatgpt_app/states/chat_ui.dart';
 import 'package:flutter_chatgpt_app/states/message.dart';
-import 'package:flutter_chatgpt_app/widgets/message_item.dart';
+import 'package:flutter_chatgpt_app/widgets/chat_message_list.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChatScreen extends HookConsumerWidget {
@@ -12,10 +12,15 @@ class ChatScreen extends HookConsumerWidget {
   _requestChatGPT(WidgetRef ref, String content) async {
     ref.read(chatUiProvider.notifier).setRequestLoading(true);
     try {
-      final res = await chatgpt.sendChat(content);
-      final text = res.choices.first.message?.content ?? "";
-      final message = Message(content: text, isUser: false, timestamp: DateTime.now());
-      ref.read(messageProvider.notifier).addMessage(message);
+      // final res = await chatgpt.sendChat(content);
+      // final text = res.choices.first.message?.content ?? "";
+      // final message = Message(id: uuid.v4(), content: text, isUser: false, timestamp: DateTime.now());
+      // ref.read(messageProvider.notifier).addMessage(message);
+      final id = uuid.v4();
+      await chatgpt.streamChat(content,onSuccess: (text){
+        final message = Message(id: id,content: text,timestamp:  DateTime.now(), isUser: false);
+        ref.read(messageProvider.notifier).upsertMessage(message);
+      });
     } catch (err) {
       logger.e("request chatgpt error: $err", err);
     } finally {
@@ -24,16 +29,14 @@ class ChatScreen extends HookConsumerWidget {
   }
 
   _sendMessage(WidgetRef ref, String content) {
-    final message = Message(content: content, isUser: true, timestamp: DateTime.now());
-    ref.read(messageProvider.notifier).addMessage(message);
+    final message = Message(id: uuid.v4(), content: content, isUser: true, timestamp: DateTime.now());
+    ref.read(messageProvider.notifier).upsertMessage(message);
     _textController.clear();
-
     _requestChatGPT(ref, content);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final messages = ref.watch(messageProvider);
     final chatUIState = ref.watch(chatUiProvider);
     return Scaffold(
       appBar: AppBar(
@@ -43,17 +46,8 @@ class ChatScreen extends HookConsumerWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Expanded(
-              child: ListView.separated(
-                  itemBuilder: (context, index) {
-                    return MessageItem(
-                      message: messages[index],
-                    );
-                  },
-                  separatorBuilder: (context, index) => const Divider(
-                        height: 16,
-                      ),
-                  itemCount: messages.length),
+            const Expanded(
+              child: ChatMessageList()
             ),
             TextField(
               controller: _textController,
