@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_app/data/database.dart';
 import 'package:flutter_chatgpt_app/widgets/chat_screen.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'injection.dart';
 
-void main() {
-  runApp(
-    const ProviderScope(child: MyApp(),)
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  db = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  runApp(const ProviderScope(
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,8 +24,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: ChatScreen(),
+      home: const ChatScreen(),
     );
   }
 }
-
