@@ -9,6 +9,9 @@ abstract class MessageDao {
   @Query('SELECT * FROM Message WHERE id = :id')
   Future<List<Message>> findMessageById(String id);
 
+  @Query('SELECT * FROM Message WHERE session_id = :sessionId')
+  Future<List<Message>> findMessagesBySessionId(int sessionId);
+
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> upsertMessage(Message message);
 

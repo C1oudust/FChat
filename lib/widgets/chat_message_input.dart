@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chatgpt_app/injection.dart';
 import 'package:flutter_chatgpt_app/models/message.dart';
+import 'package:flutter_chatgpt_app/models/session.dart';
 import 'package:flutter_chatgpt_app/states/chat_ui.dart';
 import 'package:flutter_chatgpt_app/states/message.dart';
+import 'package:flutter_chatgpt_app/states/session.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -36,7 +38,23 @@ class ChatMessageInput extends HookConsumerWidget {
         ));
   }
 
-  _requestChatGPT(WidgetRef ref, String content) async {
+  Message _createMessage(
+    String content, {
+    String? id,
+    bool isUser = true,
+    int? sessionId,
+  }) {
+    final message = Message(
+      id: id ?? uuid.v4(),
+      content: content,
+      isUser: isUser,
+      timestamp: DateTime.now(),
+      sessionId: sessionId ?? 0,
+    );
+    return message;
+  }
+
+  _requestChatGPT(WidgetRef ref, String content, {int? sessionId}) async {
     ref.read(chatUiProvider.notifier).setRequestLoading(true);
     try {
       // final res = await chatgpt.sendChat(content);
@@ -45,7 +63,7 @@ class ChatMessageInput extends HookConsumerWidget {
       // ref.read(messageProvider.notifier).addMessage(message);
       final id = uuid.v4();
       await chatgpt.streamChat(content, onSuccess: (text) {
-        final message = Message(id: id, content: text, timestamp: DateTime.now(), isUser: false);
+        final message = _createMessage(text, id: id, isUser: false, sessionId: sessionId);
         ref.read(messageProvider.notifier).upsertMessage(message);
       });
     } catch (err) {
@@ -55,11 +73,22 @@ class ChatMessageInput extends HookConsumerWidget {
     }
   }
 
-  _sendMessage(WidgetRef ref, String content) {
+  _sendMessage(WidgetRef ref, String content) async {
     if (content.isEmpty) return;
-    final message = Message(id: uuid.v4(), content: content, isUser: true, timestamp: DateTime.now());
-    ref.read(messageProvider.notifier).upsertMessage(message);
+    Message message = _createMessage(content);
+
+    var active = ref.watch(activeSessionProvider);
+    var sessionId = active?.id ?? 0;
+    if (sessionId <= 0) {
+      active = Session(title: content);
+      active = await ref.read(sessionStateNotifierProvider.notifier).upsertSesion(active);
+      sessionId = active.id!;
+      ref.read(sessionStateNotifierProvider.notifier).setActiveSession(active.copyWith(id: sessionId));
+    }
+    ref.read(messageProvider.notifier).upsertMessage(
+          message.copyWith(sessionId: sessionId),
+        );
     _textController.clear();
-    _requestChatGPT(ref, content);
+    _requestChatGPT(ref, content, sessionId: sessionId);
   }
 }

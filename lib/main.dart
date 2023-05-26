@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/data/database.dart';
-import 'package:flutter_chatgpt_app/widgets/chat_screen.dart';
+import 'package:flutter_chatgpt_app/router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'injection.dart';
 
@@ -18,13 +18,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'chat',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ChatScreen(),
+      routerConfig: router,
+
     );
   }
 }
