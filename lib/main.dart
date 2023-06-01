@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatgpt_app/data/database.dart';
 import 'package:flutter_chatgpt_app/router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'injection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  db = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  await setupDatabse();
   runApp(const ProviderScope(
     child: MyApp(),
   ));
@@ -26,7 +25,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       routerConfig: router,
-
     );
   }
 }

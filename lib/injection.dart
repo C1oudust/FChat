@@ -7,3 +7,6 @@ final chatgpt = ChatGPTService();
 final logger = Logger(level: kDebugMode ? Level.verbose : Level.info);
 const uuid = Uuid();
 late AppDatabase db;
+setupDatabse() async {
+  db = await initDatabase();
+}
