@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/states/chat_ui.dart';
 import 'package:flutter_chatgpt_app/states/session.dart';
 import 'package:flutter_chatgpt_app/widgets/chat_gpt_model_widget.dart';
-import 'package:flutter_chatgpt_app/widgets/chat_message_input.dart';
+import 'package:flutter_chatgpt_app/widgets/chat_input_widget.dart';
 import 'package:flutter_chatgpt_app/widgets/chat_message_list.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -38,7 +38,7 @@ class ChatScreen extends HookConsumerWidget {
             GptModelWidget(active: activeSession?.model.toModel(),onModelChanged: (model){
               ref.read(chatUiProvider.notifier).model = model;
             },),
-            Expanded(child: ChatMessageList()), ChatMessageInput()],
+            Expanded(child: ChatMessageList()), ChatInputWidget()],
         ),
       ),
     );
