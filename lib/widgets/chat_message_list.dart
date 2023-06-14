@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/states/message.dart';
-import 'package:flutter_chatgpt_app/widgets/message_item.dart';
+import 'package:flutter_chatgpt_app/widgets/received_message_item.dart';
+import 'package:flutter_chatgpt_app/widgets/send_message_item.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class ChatMessageList extends HookConsumerWidget {
   ChatMessageList({super.key});
+
   final listController = useScrollController();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final messages = ref.watch(activeSessionMessagesProvider);
@@ -18,12 +21,16 @@ class ChatMessageList extends HookConsumerWidget {
     return ListView.separated(
         controller: listController,
         itemBuilder: (context, index) {
-          return MessageItem(
-            message: messages[index],
-          );
+          final msg = messages[index];
+          return msg.isUser
+              ? SendMessageItem(message: msg)
+              : ReceivedMessageItem(
+                  message: msg,
+                );
         },
         separatorBuilder: (context, index) => const Divider(
               height: 16,
+              color: Colors.transparent,
             ),
         itemCount: messages.length);
   }

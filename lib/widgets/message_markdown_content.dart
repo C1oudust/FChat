@@ -11,10 +11,13 @@ class MessageMarkdownContent extends StatelessWidget {
   Widget build(BuildContext context) {
     codeWrapper(child, text) => CodeWrapperWidget(child: child, text: text);
     return SelectionArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: MarkdownGenerator(config: MarkdownConfig().copy(configs: [const PreConfig().copy(wrapper: codeWrapper)]), generators: [latexGenerator], inlineSyntaxes: [LatexSyntax()])
-            .buildWidgets(message.content),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: MarkdownGenerator(config: MarkdownConfig().copy(configs: [const PreConfig().copy(wrapper: codeWrapper)]), generators: [latexGenerator], inlineSyntaxes: [LatexSyntax()])
+              .buildWidgets(message.content),
+        ),
       ),
     );
   }

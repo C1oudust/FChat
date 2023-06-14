@@ -31,14 +31,17 @@ class ChatScreen extends HookConsumerWidget {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            GptModelWidget(active: activeSession?.model.toModel(),onModelChanged: (model){
-              ref.read(chatUiProvider.notifier).model = model;
-            },),
-            Expanded(child: ChatMessageList()), ChatInputWidget()],
+      body: Container(
+        color: const Color(0xfff1f1f1),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              GptModelWidget(active: activeSession?.model.toModel(),onModelChanged: (model){
+                ref.read(chatUiProvider.notifier).model = model;
+              },),
+              Expanded(child: ChatMessageList()), ChatInputWidget()],
+          ),
         ),
       ),
     );
