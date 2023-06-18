@@ -7,11 +7,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 class ReceivedMessageItem extends StatelessWidget {
   const ReceivedMessageItem({
     super.key,
-    required this.message,
+    required this.message, this.typing = false,
   });
 
   final Message message;
-
+  final bool typing;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -32,6 +32,7 @@ class ReceivedMessageItem extends StatelessWidget {
           margin: const EdgeInsets.only(right: 48),
           child: MessageMarkdownContent(
             message: message,
+            typing: typing,
           ),
         ))
       ],

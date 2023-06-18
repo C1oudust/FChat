@@ -11,17 +11,23 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ChatInputWidget extends HookConsumerWidget {
+  const ChatInputWidget({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final voiceMode = useState(false);
+    final chatUIState = ref.watch(chatUiProvider);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+      height: 42,
       child: Row(
         children: [
           IconButton(
-            onPressed: () {
-              voiceMode.value = !voiceMode.value;
-            },
+            onPressed: chatUIState.requestLoading
+                ? null
+                : () {
+                    voiceMode.value = !voiceMode.value;
+                  },
             icon: Icon(voiceMode.value ? Icons.keyboard : Icons.keyboard_voice),
           ),
           Expanded(
@@ -94,24 +100,40 @@ class ChatMessageInput extends HookConsumerWidget {
     final chatUIState = ref.watch(chatUiProvider);
 
     return RawKeyboardListener(
-        focusNode: _focusNode,
-        onKey: (RawKeyEvent event) {
-          if (event.logicalKey == LogicalKeyboardKey.enter) {
-            _sendMessage(ref, _textController);
-          }
-        },
-        child: TextField(
+      focusNode: _focusNode,
+      onKey: (RawKeyEvent event) {
+        if (event.logicalKey == LogicalKeyboardKey.enter) {
+          _sendMessage(ref, _textController);
+        }
+      },
+      child: TextField(
           controller: _textController,
-          enabled: !chatUIState.requestLoading,
           decoration: InputDecoration(
-              hintText: 'input a message',
-              suffixIcon: IconButton(
-                onPressed: () {
-                  _sendMessage(ref, _textController);
-                },
-                icon: const Icon(Icons.send),
-              )),
-        ));
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            hintText: 'input a message',
+            suffixIcon: SizedBox(
+                width: 40,
+                child: chatUIState.requestLoading
+                    ? const Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      )
+                    : IconButton(
+                        onPressed: () {
+                          _sendMessage(ref, _textController);
+                        },
+                        icon: const Icon(Icons.send),
+                      )),
+          )),
+    );
   }
 }
 

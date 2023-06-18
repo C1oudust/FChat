@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_app/states/chat_ui.dart';
 import 'package:flutter_chatgpt_app/states/message.dart';
 import 'package:flutter_chatgpt_app/widgets/received_message_item.dart';
 import 'package:flutter_chatgpt_app/widgets/send_message_item.dart';
@@ -13,6 +14,7 @@ class ChatMessageList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final messages = ref.watch(activeSessionMessagesProvider);
+    final uiState = ref.watch(chatUiProvider);
     ref.listen(activeSessionMessagesProvider, (previous, next) {
       Future.delayed(const Duration(milliseconds: 50), () {
         listController.jumpTo(listController.position.maxScrollExtent);
@@ -26,6 +28,8 @@ class ChatMessageList extends HookConsumerWidget {
               ? SendMessageItem(message: msg)
               : ReceivedMessageItem(
                   message: msg,
+                  typing:
+                      index == messages.length - 1 && uiState.requestLoading,
                 );
         },
         separatorBuilder: (context, index) => const Divider(

@@ -38,7 +38,9 @@ class SendMessageItem extends StatelessWidget {
         ),
         CircleAvatar(
           backgroundColor: Colors.blue,
-          child: Container(padding: const EdgeInsets.all(11.0), child: SvgPicture.asset('assets/images/user.svg')),
+          child: Container(
+              padding: const EdgeInsets.all(11.0),
+              child: SvgPicture.asset('assets/images/user.svg')),
         )
       ],
     );
