@@ -174,7 +174,7 @@ _requestChatGPT(WidgetRef ref, String content, {int? sessionId}) async {
   } catch (err) {
     final id = uuid.v4();
     logger.e("request chatgpt error: $err", err);
-    final message = _createMessage("暂无GPT4 使用权限",
+    final message = _createMessage("暂无GPT 使用权限",
         id: id, isUser: false, sessionId: sessionId);
     ref.read(messageProvider.notifier).upsertMessage(message);
   } finally {

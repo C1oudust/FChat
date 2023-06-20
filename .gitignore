@@ -54,4 +54,5 @@ database.g.dart
 session.freezed.dart
 session.g.dart
 message.g.dart
-
+settings.freezed.dart
+settings.g.dart

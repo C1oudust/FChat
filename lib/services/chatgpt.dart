@@ -1,5 +1,6 @@
 import 'package:flutter_chatgpt_app/injection.dart';
 import 'package:flutter_chatgpt_app/models/message.dart';
+import 'package:flutter_chatgpt_app/states/settings.dart';
 import 'package:openai_api/openai_api.dart';
 import 'package:tiktoken/tiktoken.dart';
 
@@ -31,21 +32,38 @@ extension on List<ChatMessage> {
 
 class ChatGPTService {
   final client = OpenaiClient(
-    config: OpenaiConfig(
-      apiKey: Env.apiKey,
-      // baseUrl: "",  // 如果有自建OpenAI服务请设置这里
-      httpProxy: Env.httpProxy, // 代理服务地址
-    ),
+    config: OpenaiConfig(apiKey: Env.apiKey, httpProxy: Env.httpProxy),
   );
 
+  loadConfig() async {
+    final settings = await Settings.load();
+    client.updateConfig(client.config.copyWith(
+        apiKey: settings.apiKey,
+        baseUrl: settings.baseUrl,
+        httpProxy: settings.httpProxy));
+  }
+
   Future<ChatCompletionResponse> sendChat(String content) async {
-    final request = ChatCompletionRequest(model: Model.gpt3_5Turbo, messages: [ChatMessage(content: content, role: ChatMessageRole.user)]);
+    final request = ChatCompletionRequest(
+        model: Model.gpt3_5Turbo,
+        messages: [ChatMessage(content: content, role: ChatMessageRole.user)]);
     return await client.sendChatCompletion(request);
   }
 
-  Future streamChat(List<Message> messages, {Model model = Model.gpt3_5Turbo, Function(String text)? onSuccess}) async {
+  Future streamChat(List<Message> messages,
+      {Model model = Model.gpt3_5Turbo,
+      Function(String text)? onSuccess}) async {
     final request = ChatCompletionRequest(
-        model: model, stream: true, messages: messages.map((e) => ChatMessage(content: e.content, role: e.isUser ? ChatMessageRole.user : ChatMessageRole.assistant)).toList().limit());
+        model: model,
+        stream: true,
+        messages: messages
+            .map((e) => ChatMessage(
+                content: e.content,
+                role: e.isUser
+                    ? ChatMessageRole.user
+                    : ChatMessageRole.assistant))
+            .toList()
+            .limit());
     return await client.sendChatCompletionStream(request, onSuccess: (p0) {
       final text = p0.choices.first.delta?.content;
       if (text != null) {
@@ -55,8 +73,23 @@ class ChatGPTService {
   }
 
   Future<String> speechToText(String path) async {
-       final res = await client.createTrascription(TranscriptionRequest(file: path));
-       logger.v(res);
-       return res.text;
+    final res =
+        await client.createTrascription(TranscriptionRequest(file: path));
+    logger.v(res);
+    return res.text;
+  }
+}
+
+extension on OpenaiConfig {
+  OpenaiConfig copyWith({
+    String? apiKey,
+    String? httpProxy,
+    String? baseUrl,
+  }) {
+    return OpenaiConfig(
+      apiKey: apiKey ?? this.apiKey,
+      httpProxy: httpProxy ?? this.httpProxy,
+      baseUrl: baseUrl ?? this.baseUrl,
+    );
   }
 }
