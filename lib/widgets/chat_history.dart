@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/states/session.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../models/session.dart';
@@ -12,18 +11,15 @@ class ChatHistory extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(sessionStateNotifierProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text("History")),
-      body: Center(
-        child: state.when(
-            data: (state) {
-              return ListView(children: [
-                for (var i in state.sessionList) ChatHistoryItemWidget(i: i),
-              ]);
-            },
-            error: (err, stack) => Text("$err"),
-            loading: () => const CircularProgressIndicator()),
-      ),
+    return Center(
+      child: state.when(
+          data: (state) {
+            return ListView(children: [
+              for (var i in state.sessionList) ChatHistoryItemWidget(i: i),
+            ]);
+          },
+          error: (err, stack) => Text("$err"),
+          loading: () => const CircularProgressIndicator()),
     );
   }
 }
@@ -33,6 +29,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
 
   final Session i;
   final controller = useTextEditingController();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(sessionStateNotifierProvider).valueOrNull;
@@ -51,7 +48,9 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                   onPressed: () {
                     final text = controller.text;
                     if (text.trim().isNotEmpty) {
-                      ref.read(sessionStateNotifierProvider.notifier).upsertSesion(
+                      ref
+                          .read(sessionStateNotifierProvider.notifier)
+                          .upsertSesion(
                             i.copyWith(title: text.trim()),
                           );
                       editMode.value = false;
@@ -88,14 +87,14 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
             ),
       onTap: () {
         ref.read(sessionStateNotifierProvider.notifier).setActiveSession(i);
-        GoRouter.of(context).pop();
       },
       selected: state?.activeSession?.id == i.id,
     );
   }
 }
 
-Future _deleteConfirm(BuildContext context, WidgetRef ref, Session session) async {
+Future _deleteConfirm(
+    BuildContext context, WidgetRef ref, Session session) async {
   return showDialog(
       context: context,
       builder: (context) {
@@ -111,7 +110,9 @@ Future _deleteConfirm(BuildContext context, WidgetRef ref, Session session) asyn
             ),
             TextButton(
               onPressed: () {
-                ref.read(sessionStateNotifierProvider.notifier).deleteSession(session);
+                ref
+                    .read(sessionStateNotifierProvider.notifier)
+                    .deleteSession(session);
                 Navigator.of(context).pop();
               },
               child: const Text("Delete"),

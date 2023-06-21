@@ -4,7 +4,6 @@ import 'package:flutter_chatgpt_app/states/session.dart';
 import 'package:flutter_chatgpt_app/widgets/chat_gpt_model_widget.dart';
 import 'package:flutter_chatgpt_app/widgets/chat_input_widget.dart';
 import 'package:flutter_chatgpt_app/widgets/chat_message_list.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:openai_api/openai_api.dart';
 
@@ -14,47 +13,21 @@ class ChatScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeSession = ref.watch(activeSessionProvider);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('chat'),
-        actions: [
-          IconButton(
-              onPressed: () {
-                GoRouter.of(context).push('/history');
+    return Container(
+      color: const Color(0xfff1f1f1),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            GptModelWidget(
+              active: activeSession?.model.toModel(),
+              onModelChanged: (model) {
+                ref.read(chatUiProvider.notifier).model = model;
               },
-              icon: const Icon(Icons.history)),
-          IconButton(
-            onPressed: () {
-              ref
-                  .read(sessionStateNotifierProvider.notifier)
-                  .setActiveSession(null);
-            },
-            icon: const Icon(Icons.add),
-          ),
-          IconButton(
-            onPressed: () {
-              GoRouter.of(context).push('/settings');
-            },
-            icon: const Icon(Icons.settings),
-          )
-        ],
-      ),
-      body: Container(
-        color: const Color(0xfff1f1f1),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              GptModelWidget(
-                active: activeSession?.model.toModel(),
-                onModelChanged: (model) {
-                  ref.read(chatUiProvider.notifier).model = model;
-                },
-              ),
-              Expanded(child: ChatMessageList()),
-              const ChatInputWidget()
-            ],
-          ),
+            ),
+            Expanded(child: ChatMessageList()),
+            const ChatInputWidget()
+          ],
         ),
       ),
     );

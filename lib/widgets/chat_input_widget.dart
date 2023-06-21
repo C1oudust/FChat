@@ -28,7 +28,7 @@ class ChatInputWidget extends HookConsumerWidget {
                 : () {
                     voiceMode.value = !voiceMode.value;
                   },
-            icon: Icon(voiceMode.value ? Icons.keyboard : Icons.keyboard_voice),
+            icon: Icon(voiceMode.value ? Icons.keyboard : Icons.keyboard_voice,color: Colors.blue,),
           ),
           Expanded(
               child: voiceMode.value ? const AudioInput() : ChatMessageInput()),
