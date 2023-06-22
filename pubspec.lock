@@ -1237,6 +1237,14 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "3.1.4"
+  windows_single_instance:
+    dependency: "direct main"
+    description:
+      name: windows_single_instance
+      sha256: "38b282ddc8a682c90b3eb4517f257cff771248845ec279287887ac5d4987ce3c"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.1.6"
   xdg_directories:
     dependency: transitive
     description:

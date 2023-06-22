@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/router.dart';
 import 'package:flutter_chatgpt_app/utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:windows_single_instance/windows_single_instance.dart';
 import 'injection.dart';
 
 void initWindow() {
@@ -17,10 +20,13 @@ void initWindow() {
   }
 }
 
-void main() async {
+void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupDatabse();
   await chatgpt.loadConfig();
+  if (Platform.isWindows) {
+    await WindowsSingleInstance.ensureSingleInstance(args, "flutter_chat_gpt");
+  }
   runApp(const ProviderScope(
     child: MyApp(),
   ));
