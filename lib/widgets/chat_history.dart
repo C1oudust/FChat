@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/states/session.dart';
+import 'package:flutter_chatgpt_app/utils.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -87,6 +88,9 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
             ),
       onTap: () {
         ref.read(sessionStateNotifierProvider.notifier).setActiveSession(i);
+        if(!isDesktop()){
+          Navigator.of(context).pop();
+        }
       },
       selected: state?.activeSession?.id == i.id,
     );

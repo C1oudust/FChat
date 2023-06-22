@@ -32,7 +32,7 @@ extension on List<ChatMessage> {
 
 class ChatGPTService {
   final client = OpenaiClient(
-    config: OpenaiConfig(apiKey: Env.apiKey, httpProxy: Env.httpProxy),
+    config: OpenaiConfig(apiKey: ''),
   );
 
   loadConfig() async {

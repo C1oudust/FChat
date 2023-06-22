@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chatgpt_app/settings_page.dart';
 import 'package:flutter_chatgpt_app/states/session.dart';
 import 'package:flutter_chatgpt_app/utils.dart';
@@ -40,17 +41,19 @@ class DesktopHomeScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.settings),
                   title: const Text('Settings'),
-                  onTap: () async{
-                    return await showDialog(context: context, builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Settings'),
-                        content: SizedBox(
-                          width: 400,
-                          height: 400,
-                          child: SettingsWindow(),
-                        ),
-                      );
-                    });
+                  onTap: () async {
+                    return await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Settings'),
+                            content: SizedBox(
+                              width: 400,
+                              height: 400,
+                              child: SettingsWindow(),
+                            ),
+                          );
+                        });
                   },
                 )
               ],
@@ -72,12 +75,12 @@ class MobileHomeScreen extends HookConsumerWidget {
       appBar: AppBar(
         title: const Text('Chat'),
         actions: [
-          IconButton(
-            onPressed: () {
-              GoRouter.of(context).push('/history');
-            },
-            icon: const Icon(Icons.history),
-          ),
+          // IconButton(
+          //   onPressed: () {
+          //     GoRouter.of(context).push('/history');
+          //   },
+          //   icon: const Icon(Icons.history),
+          // ),
           IconButton(
             onPressed: () {
               ref
@@ -86,14 +89,43 @@ class MobileHomeScreen extends HookConsumerWidget {
             },
             icon: const Icon(Icons.add),
           ),
-          IconButton(
-              onPressed: () {
-                GoRouter.of(context).push('/settings');
-              },
-              icon: const Icon(Icons.settings)),
+          // IconButton(
+          //     onPressed: () {
+          //       GoRouter.of(context).push('/settings');
+          //     },
+          //     icon: const Icon(Icons.settings)),
         ],
       ),
-      body: const ChatScreen(),
+      drawer: Drawer(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
+          child: Text(
+            'History',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        const Expanded(
+          child: ChatHistory(),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text('Settings'),
+          onTap: () {
+            Navigator.of(context).pop();
+            GoRouter.of(context).push('/settings');
+          },
+        )
+      ])),
+      body: GestureDetector(
+        onTap: () {
+          // 安卓软键盘收起
+          SystemChannels.textInput.invokeMethod('TextInput.hide');
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: const ChatScreen(),
+      ),
     );
   }
 }

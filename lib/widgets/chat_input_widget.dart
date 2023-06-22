@@ -28,7 +28,10 @@ class ChatInputWidget extends HookConsumerWidget {
                 : () {
                     voiceMode.value = !voiceMode.value;
                   },
-            icon: Icon(voiceMode.value ? Icons.keyboard : Icons.keyboard_voice,color: Colors.blue,),
+            icon: Icon(
+              voiceMode.value ? Icons.keyboard : Icons.keyboard_voice,
+              color: Colors.blue,
+            ),
           ),
           Expanded(
               child: voiceMode.value ? const AudioInput() : ChatMessageInput()),
@@ -68,6 +71,7 @@ class AudioInput extends HookConsumerWidget {
               try {
                 transcripting.value = true;
                 final text = await chatgpt.speechToText(path);
+                recorder.clear(path);
                 transcripting.value = false;
                 if (text.trim().isNotEmpty) {
                   __sendMessage(ref, text);
@@ -174,7 +178,7 @@ _requestChatGPT(WidgetRef ref, String content, {int? sessionId}) async {
   } catch (err) {
     final id = uuid.v4();
     logger.e("request chatgpt error: $err", err);
-    final message = _createMessage("暂无GPT 使用权限",
+    final message = _createMessage("暂无 GPT 使用权限",
         id: id, isUser: false, sessionId: sessionId);
     ref.read(messageProvider.notifier).upsertMessage(message);
   } finally {
