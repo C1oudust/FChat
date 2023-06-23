@@ -22,7 +22,7 @@ void initWindow() {
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  await setupDatabse();
+  await setupDatabase();
   await chatgpt.loadConfig();
   if (Platform.isWindows) {
     await WindowsSingleInstance.ensureSingleInstance(args, "flutter_chat_gpt");

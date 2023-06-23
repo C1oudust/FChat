@@ -1,7 +1,11 @@
+import 'package:flutter_chatgpt_app/utils.dart';
 import 'package:localstorage/localstorage.dart';
 
 class LocalStorageService {
-  final localStorage = LocalStorage('chatgpt');
+  //安卓会报错没有chatgpt文件夹
+  final localStorage = isDesktop()
+      ? LocalStorage('chatgpt/config.json')
+      : LocalStorage('config.json');
 
   Future<T?> get<T>(String key) async {
     await localStorage.ready;
