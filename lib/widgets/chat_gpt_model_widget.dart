@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_app/l10n/l10n.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:openai_api/openai_api.dart';
 
@@ -27,7 +28,7 @@ class GptModelWidget extends HookWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('Model: '),
+         Text('${L10n.of(context)!.model}: '),
         active == null
             ? DropdownButton<Model>(
                 items: [Model.gpt3_5Turbo, Model.gpt4].map((e) {

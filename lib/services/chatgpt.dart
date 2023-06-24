@@ -20,7 +20,7 @@ extension on List<ChatMessage> {
     }
     for (var i = length - 1; i >= 0; i--) {
       final m = this[i];
-      count = count + encoding.encode(m.role.toString() + m.content).length;
+      count = count + encoding.encode(m.role.toString() + m.content!).length;
       if (count <= maxToken!) {
         messages.insert(0, m);
       }

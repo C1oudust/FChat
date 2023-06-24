@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chatgpt_app/injection.dart';
+import 'package:flutter_chatgpt_app/l10n/l10n.dart';
 import 'package:flutter_chatgpt_app/models/message.dart';
 import 'package:flutter_chatgpt_app/models/session.dart';
 import 'package:flutter_chatgpt_app/states/chat_ui.dart';
@@ -53,8 +54,9 @@ class AudioInput extends HookConsumerWidget {
             height: 36,
             child: ElevatedButton(
                 onPressed: null,
-                child: Text(
-                    transcripting.value ? "Transcripting..." : "Loading...")),
+                child: Text(transcripting.value
+                    ? L10n.of(context)!.transcripting
+                    : L10n.of(context)!.loading)),
           )
         : GestureDetector(
             onLongPressStart: (details) {
@@ -86,7 +88,9 @@ class AudioInput extends HookConsumerWidget {
             },
             child: ElevatedButton(
               onPressed: () {},
-              child: Text(recording.value ? 'Recording...' : 'Hold to speak'),
+              child: Text(recording.value
+                  ? L10n.of(context)!.recording
+                  : L10n.of(context)!.hold),
             ),
           );
   }
@@ -116,7 +120,7 @@ class ChatMessageInput extends HookConsumerWidget {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
-            hintText: 'input a message',
+            hintText: L10n.of(context)!.input,
             suffixIcon: SizedBox(
                 width: 40,
                 child: chatUIState.requestLoading
@@ -177,7 +181,7 @@ _requestChatGPT(WidgetRef ref, String content, {int? sessionId}) async {
   } catch (err) {
     final id = uuid.v4();
     logger.e("request chatgpt error: $err", err);
-    final message = _createMessage("暂无 GPT 使用权限",
+    final message = _createMessage(L10n.of(ref.context)!.error_msg,
         id: id, isUser: false, sessionId: sessionId);
     ref.read(messageProvider.notifier).upsertMessage(message);
   } finally {

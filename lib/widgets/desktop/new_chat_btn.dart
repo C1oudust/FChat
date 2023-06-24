@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_app/l10n/l10n.dart';
 import 'package:flutter_chatgpt_app/states/session.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -34,7 +35,7 @@ class NewChatBtn extends HookConsumerWidget {
             icon: const Icon(
               Icons.add,
             ),
-            label: const Text('New Chat')),
+            label: Text(L10n.of(context)!.newChat)),
       ),
     );
   }

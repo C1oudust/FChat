@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_chatgpt_app/l10n/l10n.dart';
 import 'package:flutter_chatgpt_app/settings_page.dart';
 import 'package:flutter_chatgpt_app/states/session.dart';
 import 'package:flutter_chatgpt_app/utils.dart';
@@ -40,13 +41,13 @@ class DesktopHomeScreen extends StatelessWidget {
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.settings),
-                  title: const Text('Settings'),
+                  title: Text(L10n.of(context)!.settings),
                   onTap: () async {
                     return await showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            title: const Text('Settings'),
+                            title: Text(L10n.of(context)!.settings),
                             content: SizedBox(
                               width: 400,
                               height: 400,
@@ -59,7 +60,7 @@ class DesktopHomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(child: ChatScreen())
+          const Expanded(child: ChatScreen())
         ],
       )),
     );
@@ -73,7 +74,7 @@ class MobileHomeScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: Text(L10n.of(context)!.chat),
         actions: [
           // IconButton(
           //   onPressed: () {
@@ -102,7 +103,7 @@ class MobileHomeScreen extends HookConsumerWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
           child: Text(
-            'History',
+            L10n.of(context)!.history,
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -111,7 +112,7 @@ class MobileHomeScreen extends HookConsumerWidget {
         ),
         ListTile(
           leading: const Icon(Icons.settings),
-          title: const Text('Settings'),
+          title: Text(L10n.of(context)!.settings),
           onTap: () {
             Navigator.of(context).pop();
             GoRouter.of(context).push('/settings');

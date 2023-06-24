@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_app/l10n/l10n.dart';
 import 'package:flutter_chatgpt_app/router.dart';
 import 'package:flutter_chatgpt_app/states/settings.dart';
 import 'package:flutter_chatgpt_app/theme.dart';
@@ -40,15 +41,17 @@ class MyApp extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode =
-        ref.watch(settingsNotifierProvider).valueOrNull?.themeMode;
+    final settings = ref.watch(settingsNotifierProvider).valueOrNull;
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'chat',
       theme: lightThemeData,
       darkTheme: darkThemeData,
-      themeMode: themeMode,
+      themeMode: settings?.themeMode,
       routerConfig: router,
+      localizationsDelegates: L10n.localizationsDelegates,
+      supportedLocales: L10n.supportedLocales,
+      locale: settings?.locale,
     );
   }
 }

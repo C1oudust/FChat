@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatgpt_app/l10n/l10n.dart';
 import 'package:flutter_chatgpt_app/states/settings.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -9,7 +10,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('settings'),
+        title: Text(L10n.of(context)!.settings),
       ),
       body: SettingsWindow(),
     );
@@ -33,7 +34,7 @@ class SettingsWindow extends HookConsumerWidget {
               ),
               actions: [
                 TextButton(
-                  child: const Text('取消'),
+                  child: Text(L10n.of(context)!.cancel),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -43,9 +44,27 @@ class SettingsWindow extends HookConsumerWidget {
                       final text = controller.text;
                       Navigator.of(context).pop(text);
                     },
-                    child: const Text('确定'))
+                    child: Text(L10n.of(context)!.confirm))
               ],
             ));
+  }
+
+  Widget radioLocaleListTile(WidgetRef ref, String title, Locale? locale) {
+    final settingsLocale =
+        ref.watch(settingsNotifierProvider).valueOrNull?.locale;
+    return SimpleDialogOption(
+        child: ListTile(
+      title: Text(title),
+      leading: Radio<Locale?>(
+        value: locale,
+        groupValue: settingsLocale,
+        onChanged: null,
+      ),
+      onTap: () {
+        ref.read(settingsNotifierProvider.notifier).setLocale(locale);
+        Navigator.of(ref.context).pop();
+      },
+    ));
   }
 
   @override
@@ -71,7 +90,7 @@ class SettingsWindow extends HookConsumerWidget {
                             .read(settingsNotifierProvider.notifier)
                             .setThemeMode(ThemeMode.system);
                       },
-                      child: const Text('System')),
+                      child: Text(L10n.of(context)!.system)),
                   RadioMenuButton(
                     value: ThemeMode.light,
                     groupValue: themeMode,
@@ -80,7 +99,7 @@ class SettingsWindow extends HookConsumerWidget {
                           .read(settingsNotifierProvider.notifier)
                           .setThemeMode(ThemeMode.light);
                     },
-                    child: const Text('Light'),
+                    child: Text(L10n.of(context)!.light),
                   ),
                   RadioMenuButton(
                     value: ThemeMode.dark,
@@ -90,10 +109,31 @@ class SettingsWindow extends HookConsumerWidget {
                           .read(settingsNotifierProvider.notifier)
                           .setThemeMode(ThemeMode.dark);
                     },
-                    child: const Text('Dark'),
+                    child: Text(L10n.of(context)!.dark),
                   )
                 ],
               ));
+        }
+        if (item.key == SettingKey.locale) {
+          return ListTile(
+            title: Text(L10n.of(context)!.locale),
+            trailing: const Icon(Icons.arrow_forward_ios),
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return SimpleDialog(
+                      title: Text(L10n.of(context)!.locale),
+                      children: [
+                        radioLocaleListTile(
+                            ref, L10n.of(context)!.system, null),
+                        radioLocaleListTile(ref, '中文', const Locale('zh')),
+                        radioLocaleListTile(ref, 'English', const Locale('en')),
+                      ],
+                    );
+                  });
+            },
+          );
         }
         return ListTile(
           title: Text(item.title),

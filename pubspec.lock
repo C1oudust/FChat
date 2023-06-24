@@ -406,6 +406,11 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "2.0.1"
+  flutter_localizations:
+    dependency: "direct main"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_math_fork:
     dependency: "direct main"
     description:
@@ -536,6 +541,14 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "4.0.2"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      sha256: a3715e3bc90294e971cb7dc063fbf3cd9ee0ebf8604ffeafabd9e6f16abbdbe6
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.18.0"
   io:
     dependency: transitive
     description:
@@ -668,10 +681,10 @@ packages:
     dependency: "direct main"
     description:
       name: openai_api
-      sha256: "13ce1edff5ddbfa1f0f262bb9cfe1807437c8e22e6587d3485f1371e31d4089d"
+      sha256: "03dfa0e75395fce306acbe0f2ec998467eaed3874e8a26035b0f29158989cca6"
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
-    version: "0.0.6"
+    version: "0.0.7"
   package_config:
     dependency: transitive
     description:

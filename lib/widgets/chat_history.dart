@@ -2,6 +2,7 @@ import 'package:cherry_toast/cherry_toast.dart';
 import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/injection.dart';
+import 'package:flutter_chatgpt_app/l10n/l10n.dart';
 import 'package:flutter_chatgpt_app/states/session.dart';
 import 'package:flutter_chatgpt_app/utils.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -49,11 +50,12 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
     try {
       final res = await export.exportMarkdown(session);
       if (res) {
-        showToast(CherryToast.success, 'export success', context);
+        showToast(
+            CherryToast.success, L10n.of(context)!.exportSuccess, context);
       }
     } catch (e) {
       logger.e("export error $e");
-      showToast(CherryToast.error, 'export failed', context);
+      showToast(CherryToast.error, L10n.of(context)!.exportFailed, context);
     }
   }
 
@@ -76,7 +78,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                 ),
                 IconButton(
                   iconSize: 16,
-                  tooltip: '完成',
+                  tooltip: L10n.of(context)!.confirm,
                   onPressed: () {
                     final text = controller.text;
                     if (text == session.title) {
@@ -96,7 +98,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                 ),
                 IconButton(
                   iconSize: 16,
-                  tooltip: '取消',
+                  tooltip: L10n.of(context)!.cancel,
                   onPressed: () {
                     editMode.value = false;
                   },
@@ -112,22 +114,24 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                     style: const TextStyle(overflow: TextOverflow.ellipsis),
                   ),
                 ),
-                IconButton(
-                  iconSize: 16,
-                  tooltip: '重命名',
-                  onPressed: () {
-                    controller.text = session.title;
-                    editMode.value = true;
-                  },
-                  icon: const Icon(
-                    Icons.edit,
-                    size: 16,
-                  ),
-                ),
                 active?.id == session.id
                     ? IconButton(
                         iconSize: 16,
-                        tooltip: '导出',
+                        tooltip: L10n.of(context)!.rename,
+                        onPressed: () {
+                          controller.text = session.title;
+                          editMode.value = true;
+                        },
+                        icon: const Icon(
+                          Icons.edit,
+                          size: 16,
+                        ),
+                      )
+                    : Container(),
+                active?.id == session.id
+                    ? IconButton(
+                        iconSize: 16,
+                        tooltip: L10n.of(context)!.export,
                         onPressed: () {
                           if (active != null) {
                             exportMarkdown(session, context);
@@ -140,7 +144,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                     : Container(),
                 IconButton(
                   iconSize: 16,
-                  tooltip: '删除',
+                  tooltip: L10n.of(context)!.delete,
                   onPressed: () {
                     _deleteConfirm(context, ref, session);
                   },
@@ -169,14 +173,14 @@ Future _deleteConfirm(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Delete"),
-          content: const Text("Are you sure to delete?"),
+          title: Text(L10n.of(context)!.delete),
+          content: Text(L10n.of(context)!.delTip),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text("Cancel"),
+              child: Text(L10n.of(context)!.cancel),
             ),
             TextButton(
               onPressed: () {
@@ -185,7 +189,7 @@ Future _deleteConfirm(
                     .deleteSession(session);
                 Navigator.of(context).pop();
               },
-              child: const Text("Delete"),
+              child: Text(L10n.of(context)!.confirm),
             ),
           ],
         );
