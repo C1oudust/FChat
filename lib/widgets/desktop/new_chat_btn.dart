@@ -12,20 +12,29 @@ class NewChatBtn extends HookConsumerWidget {
         height: 40,
         child: OutlinedButton.icon(
             style: ButtonStyle(
+              textStyle: MaterialStateProperty.all(
+                Theme.of(context).textTheme.titleMedium,
+              ),
+              iconSize:
+                  MaterialStateProperty.all(Theme.of(context).iconTheme.size),
               alignment: Alignment.centerLeft,
               shape: MaterialStateProperty.all(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              iconColor: MaterialStateProperty.all(Colors.black),
-              foregroundColor: MaterialStateProperty.all(Colors.black),
+              iconColor: MaterialStateProperty.all(
+                  Theme.of(context).textTheme.titleMedium?.color),
+              foregroundColor: MaterialStateProperty.all(
+                  Theme.of(context).textTheme.titleMedium?.color),
             ),
             onPressed: () {
               ref
                   .read(sessionStateNotifierProvider.notifier)
                   .setActiveSession(null);
             },
-            icon: const Icon(Icons.add,size: 16,),
-            label: const Text('new chat')),
+            icon: const Icon(
+              Icons.add,
+            ),
+            label: const Text('New Chat')),
       ),
     );
   }

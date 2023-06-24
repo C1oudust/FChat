@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/injection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -8,14 +9,23 @@ part 'settings.g.dart';
 
 @freezed
 abstract class Settings with _$Settings {
-  const factory Settings({String? apiKey, String? httpProxy, String? baseUrl}) =
-      _Settings;
+  const factory Settings(
+      {String? apiKey,
+      String? httpProxy,
+      String? baseUrl,
+      @Default(ThemeMode.system) ThemeMode themeMode}) = _Settings;
 
   static Future<Settings> load() async {
     final apiKey = await localStorage.get<String>(SettingKey.apiKey.name);
     final baseUrl = await localStorage.get<String>(SettingKey.baseUrl.name);
     final httpProxy = await localStorage.get<String>(SettingKey.httpProxy.name);
-    return Settings(apiKey: apiKey, baseUrl: baseUrl, httpProxy: httpProxy);
+    final themeMode = await localStorage.get(SettingKey.themeMode.name) ??
+        ThemeMode.system.index;
+    return Settings(
+        apiKey: apiKey,
+        baseUrl: baseUrl,
+        httpProxy: httpProxy,
+        themeMode: ThemeMode.values[themeMode]);
   }
 }
 
@@ -55,12 +65,23 @@ class SettingsNotifier extends _$SettingsNotifier {
       return settings.copyWith(httpProxy: httpProxy);
     });
   }
+
+  Future<void> setThemeMode(ThemeMode themeMode) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await localStorage.set(SettingKey.themeMode.name, themeMode.index);
+      final settings = state.valueOrNull ?? const Settings();
+      await chatgpt.loadConfig();
+      return settings.copyWith(themeMode: themeMode);
+    });
+  }
 }
 
 enum SettingKey {
   apiKey,
   httpProxy,
   baseUrl,
+  themeMode,
 }
 
 @freezed
@@ -69,6 +90,7 @@ class SettingItem with _$SettingItem {
     required SettingKey key,
     required String title,
     String? subtitle,
+    dynamic value,
     @Default(false) bool multiline,
     required String hint,
   }) = _SettingItem;
@@ -95,5 +117,10 @@ List<SettingItem> settingList(SettingListRef ref) {
         title: "Reverse proxy URL",
         subtitle: settings?.baseUrl,
         hint: "https://openai.proxy.dev/v1"),
+    SettingItem(
+        key: SettingKey.themeMode,
+        title: "App Theme",
+        hint: "theme mode",
+        value: settings?.themeMode),
   ];
 }

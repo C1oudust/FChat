@@ -55,7 +55,7 @@ class LatexNode extends SpanNode {
     final latex = Math.tex(
       content,
       mathStyle: MathStyle.text,
-      textStyle: style.copyWith(color: Colors.black),
+      textStyle: style,
       textScaleFactor: 1,
       onErrorFallback: (error) {
         return Text(
@@ -67,10 +67,10 @@ class LatexNode extends SpanNode {
     return WidgetSpan(
         child: !isInline
             ? Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(vertical: 16),
-          child: Center(child: latex),
-        )
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: latex),
+              )
             : latex);
   }
 }

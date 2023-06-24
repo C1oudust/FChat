@@ -5,13 +5,16 @@ import 'package:flutter_chatgpt_app/widgets/triangle.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ReceivedMessageItem extends StatelessWidget {
-  const ReceivedMessageItem({
-    super.key,
-    required this.message, this.typing = false,
-  });
+  const ReceivedMessageItem(
+      {super.key,
+      required this.message,
+      this.typing = false,
+      this.backgroundColor = Colors.white});
 
   final Message message;
+  final Color backgroundColor;
   final bool typing;
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -19,16 +22,20 @@ class ReceivedMessageItem extends StatelessWidget {
       children: [
         CircleAvatar(
           backgroundColor: Colors.white,
-            child: Container(padding: const EdgeInsets.all(8.0), child: SvgPicture.asset('assets/images/chatgpt.svg')),
+          child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: SvgPicture.asset('assets/images/chatgpt.svg')),
         ),
         const SizedBox(
           width: 8,
         ),
-        const CustomPaint(painter: Triangle(bgColor: Colors.white),),
+        CustomPaint(
+          painter: Triangle(bgColor: backgroundColor),
+        ),
         Flexible(
             child: Container(
           decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(8)),
+              color: backgroundColor, borderRadius: BorderRadius.circular(8)),
           margin: const EdgeInsets.only(right: 48),
           child: MessageMarkdownContent(
             message: message,

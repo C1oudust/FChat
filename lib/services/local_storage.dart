@@ -3,6 +3,7 @@ import 'package:localstorage/localstorage.dart';
 
 class LocalStorageService {
   //安卓会报错没有chatgpt文件夹
+  // windows位于 用户名/document文件夹下
   final localStorage = isDesktop()
       ? LocalStorage('chatgpt/config.json')
       : LocalStorage('config.json');

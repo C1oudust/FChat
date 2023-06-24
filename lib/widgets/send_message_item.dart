@@ -5,12 +5,13 @@ import 'package:flutter_chatgpt_app/widgets/triangle.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SendMessageItem extends StatelessWidget {
-  const SendMessageItem({
-    super.key,
-    required this.message,
-  });
+  const SendMessageItem(
+      {super.key,
+      required this.message,
+      this.backgroundColor = const Color(0xFF8FE869)});
 
   final Message message;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class SendMessageItem extends StatelessWidget {
         Flexible(
             child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF8FE869),
+            color: backgroundColor,
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -30,8 +31,8 @@ class SendMessageItem extends StatelessWidget {
             message: message,
           ),
         )),
-        const CustomPaint(
-          painter: Triangle(bgColor: Color(0xFF8FE869)),
+        CustomPaint(
+          painter: Triangle(bgColor: backgroundColor),
         ),
         const SizedBox(
           width: 8,

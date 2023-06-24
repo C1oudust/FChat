@@ -76,6 +76,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                 ),
                 IconButton(
                   iconSize: 16,
+                  tooltip: '完成',
                   onPressed: () {
                     final text = controller.text;
                     if (text == session.title) {
@@ -95,6 +96,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                 ),
                 IconButton(
                   iconSize: 16,
+                  tooltip: '取消',
                   onPressed: () {
                     editMode.value = false;
                   },
@@ -105,10 +107,14 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
           : Row(
               children: [
                 Expanded(
-                  child: Text(session.title),
+                  child: Text(
+                    session.title,
+                    style: const TextStyle(overflow: TextOverflow.ellipsis),
+                  ),
                 ),
                 IconButton(
                   iconSize: 16,
+                  tooltip: '重命名',
                   onPressed: () {
                     controller.text = session.title;
                     editMode.value = true;
@@ -121,6 +127,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                 active?.id == session.id
                     ? IconButton(
                         iconSize: 16,
+                        tooltip: '导出',
                         onPressed: () {
                           if (active != null) {
                             exportMarkdown(session, context);
@@ -133,6 +140,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
                     : Container(),
                 IconButton(
                   iconSize: 16,
+                  tooltip: '删除',
                   onPressed: () {
                     _deleteConfirm(context, ref, session);
                   },

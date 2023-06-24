@@ -51,12 +51,56 @@ class SettingsWindow extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(settingListProvider);
+    final themeMode =
+        ref.watch(settingsNotifierProvider).valueOrNull?.themeMode ??
+            ThemeMode.system;
+
     return ListView.separated(
       itemBuilder: (context, index) {
         final item = items[index];
+        if (item.key == SettingKey.themeMode) {
+          return ListTile(
+              title: Text(item.title),
+              subtitle: Row(
+                children: [
+                  RadioMenuButton(
+                      value: ThemeMode.system,
+                      groupValue: themeMode,
+                      onChanged: (value) {
+                        ref
+                            .read(settingsNotifierProvider.notifier)
+                            .setThemeMode(ThemeMode.system);
+                      },
+                      child: const Text('System')),
+                  RadioMenuButton(
+                    value: ThemeMode.light,
+                    groupValue: themeMode,
+                    onChanged: (value) {
+                      ref
+                          .read(settingsNotifierProvider.notifier)
+                          .setThemeMode(ThemeMode.light);
+                    },
+                    child: const Text('Light'),
+                  ),
+                  RadioMenuButton(
+                    value: ThemeMode.dark,
+                    groupValue: themeMode,
+                    onChanged: (value) {
+                      ref
+                          .read(settingsNotifierProvider.notifier)
+                          .setThemeMode(ThemeMode.dark);
+                    },
+                    child: const Text('Dark'),
+                  )
+                ],
+              ));
+        }
         return ListTile(
           title: Text(item.title),
-          subtitle: Text(item.subtitle ?? ''),
+          subtitle: Text(
+            item.subtitle ?? '',
+            style: const TextStyle(overflow: TextOverflow.ellipsis),
+          ),
           trailing: const Icon(Icons.arrow_forward_ios),
           onTap: () async {
             String? text = await showEditDialog(controller, item, ref);
