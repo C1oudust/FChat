@@ -56,3 +56,6 @@ session.g.dart
 message.g.dart
 settings.freezed.dart
 settings.g.dart
+l10n.dart
+l10n_en.dart
+l10n_zh.dart
