@@ -60,6 +60,8 @@ dependencies:
   windows_single_instance: ^0.1.6
   cherry_toast: ^1.2.1
   file_picker: ^5.2.10
+  flutter_launcher_icons: ^0.13.1
+  sqlite3_flutter_libs: ^0.5.15
 
 dev_dependencies:
   flutter_test:
@@ -99,6 +101,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/
+    - assets/icon/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
