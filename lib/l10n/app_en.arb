@@ -18,6 +18,7 @@
   "httpProxy": "Http Proxy",
   "httpProxyHint": "Please input HTTP Proxy",
   "apiKey": "API Key",
+  "apiKeyHint": "Please input API Key",
   "baseUrl": "Reverse Proxy URL",
   "locale": "Language",
   "history": "History",

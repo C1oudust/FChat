@@ -47,6 +47,7 @@ class DesktopHomeScreen extends StatelessWidget {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
+                            contentPadding: const EdgeInsets.all(0),
                             title: Text(L10n.of(context)!.settings),
                             content: SizedBox(
                               width: 400,
