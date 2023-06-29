@@ -7,9 +7,11 @@ import 'package:flutter_chatgpt_app/models/session.dart';
 import 'package:flutter_chatgpt_app/states/chat_ui.dart';
 import 'package:flutter_chatgpt_app/states/message.dart';
 import 'package:flutter_chatgpt_app/states/session.dart';
+import 'package:flutter_chatgpt_app/states/settings.dart';
 import 'package:flutter_chatgpt_app/widgets/chat_screen.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:openai_api/openai_api.dart';
 
 class ChatInputWidget extends HookConsumerWidget {
   const ChatInputWidget({super.key});
@@ -162,7 +164,7 @@ Message _createMessage(
 
 _requestChatGPT(WidgetRef ref, String content, {int? sessionId}) async {
   ref.read(chatUiProvider.notifier).setRequestLoading(true);
-  final uiState = ref.watch(chatUiProvider);
+  final model = ref.watch(settingsNotifierProvider).valueOrNull?.model;
   final messages = ref.watch(activeSessionMessagesProvider);
   final activeSession = ref.watch(activeSessionProvider);
   try {
@@ -172,7 +174,7 @@ _requestChatGPT(WidgetRef ref, String content, {int? sessionId}) async {
     // ref.read(messageProvider.notifier).addMessage(message);
     final id = uuid.v4();
     await chatgpt.streamChat(messages,
-        model: activeSession?.model.toModel() ?? uiState.model,
+        model: activeSession?.model.toModel() ?? Model.values.firstWhere((e) => e.name == model),
         onSuccess: (text) {
       final message =
           _createMessage(text, id: id, isUser: false, sessionId: sessionId);

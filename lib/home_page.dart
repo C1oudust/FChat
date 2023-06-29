@@ -51,7 +51,7 @@ class DesktopHomeScreen extends StatelessWidget {
                             title: Text(L10n.of(context)!.settings),
                             content: SizedBox(
                               width: 400,
-                              height: 400,
+                              height: 420,
                               child: SettingsWindow(),
                             ),
                           );

@@ -64,111 +64,115 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
     final active = ref.watch(activeSessionProvider);
     final editMode = useState(false);
 
-    return ListTile(
-      title: editMode.value
-          ? Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 40,
-                    child: TextField(
-                      controller: controller,
-                    ),
-                  ),
+    return Card(
+      elevation: active?.id == session.id ? 1 : 0,
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        title: editMode.value
+            ? Row(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 40,
+                child: TextField(
+                  controller: controller,
                 ),
-                IconButton(
-                  iconSize: 16,
-                  tooltip: L10n.of(context)!.confirm,
-                  onPressed: () {
-                    final text = controller.text;
-                    if (text == session.title) {
-                      editMode.value = false;
-                      return;
-                    }
-                    if (text.trim().isNotEmpty) {
-                      ref
-                          .read(sessionStateNotifierProvider.notifier)
-                          .upsertSesion(
-                            session.copyWith(title: text.trim()),
-                          );
-                      editMode.value = false;
-                    }
-                  },
-                  icon: const Icon(Icons.done),
-                ),
-                IconButton(
-                  iconSize: 16,
-                  tooltip: L10n.of(context)!.cancel,
-                  onPressed: () {
-                    editMode.value = false;
-                  },
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            )
-          : Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    session.title,
-                    style: const TextStyle(overflow: TextOverflow.ellipsis),
-                  ),
-                ),
-                active?.id == session.id
-                    ? IconButton(
-                        iconSize: 16,
-                        tooltip: L10n.of(context)!.rename,
-                        onPressed: () {
-                          controller.text = session.title;
-                          editMode.value = true;
-                        },
-                        icon: const Icon(
-                          Icons.edit,
-                          size: 16,
-                        ),
-                      )
-                    : Container(),
-                active?.id == session.id
-                    ? IconButton(
-                        iconSize: 16,
-                        tooltip: L10n.of(context)!.export,
-                        onPressed: () {
-                          if (active != null) {
-                            exportMarkdown(session, context);
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.ios_share,
-                        ),
-                      )
-                    : Container(),
-                IconButton(
-                  iconSize: 16,
-                  tooltip: L10n.of(context)!.delete,
-                  onPressed: () {
-                    _deleteConfirm(context, ref, session);
-                  },
-                  icon: const Icon(
-                    Icons.delete,
-                  ),
-                ),
-              ],
+              ),
             ),
-      onTap: () {
-        ref
-            .read(sessionStateNotifierProvider.notifier)
-            .setActiveSession(session);
-        if (!isDesktop()) {
-          Navigator.of(context).pop();
-        }
-      },
-      selected: active?.id == session.id,
+            IconButton(
+              iconSize: 16,
+              tooltip: L10n.of(context)!.confirm,
+              onPressed: () {
+                final text = controller.text;
+                if (text == session.title) {
+                  editMode.value = false;
+                  return;
+                }
+                if (text
+                    .trim()
+                    .isNotEmpty) {
+                  ref
+                      .read(sessionStateNotifierProvider.notifier)
+                      .upsertSesion(
+                    session.copyWith(title: text.trim()),
+                  );
+                  editMode.value = false;
+                }
+              },
+              icon: const Icon(Icons.done),
+            ),
+            IconButton(
+              iconSize: 16,
+              tooltip: L10n.of(context)!.cancel,
+              onPressed: () {
+                editMode.value = false;
+              },
+              icon: const Icon(Icons.close),
+            ),
+          ],
+        )
+            : Row(
+          children: [
+            Expanded(
+              child: Text(
+                session.title,
+                style: const TextStyle(overflow: TextOverflow.ellipsis),
+              ),
+            ),
+            active?.id == session.id
+                ? IconButton(
+              iconSize: 16,
+              tooltip: L10n.of(context)!.rename,
+              onPressed: () {
+                controller.text = session.title;
+                editMode.value = true;
+              },
+              icon: const Icon(
+                Icons.edit,
+                size: 16,
+              ),
+            )
+                : Container(),
+            IconButton(
+              iconSize: 16,
+              tooltip: L10n.of(context)!.export,
+              onPressed: () {
+                if (active != null) {
+                  exportMarkdown(session, context);
+                }
+              },
+              icon: const Icon(
+                Icons.ios_share,
+              ),
+            ),
+            IconButton(
+              iconSize: 16,
+              tooltip: L10n.of(context)!.delete,
+              onPressed: () {
+                _deleteConfirm(context, ref, session);
+              },
+              icon: const Icon(
+                Icons.delete,
+              ),
+            ),
+          ],
+        ),
+        onTap: () {
+          ref
+              .read(sessionStateNotifierProvider.notifier)
+              .setActiveSession(session);
+          if (!isDesktop()) {
+            Navigator.of(context).pop();
+          }
+        },
+        selected: active?.id == session.id,
+      ),
     );
   }
 }
 
-Future _deleteConfirm(
-    BuildContext context, WidgetRef ref, Session session) async {
+Future _deleteConfirm(BuildContext context, WidgetRef ref,
+    Session session) async {
   return showDialog(
       context: context,
       builder: (context) {

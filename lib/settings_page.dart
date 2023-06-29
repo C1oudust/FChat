@@ -3,6 +3,7 @@ import 'package:flutter_chatgpt_app/l10n/l10n.dart';
 import 'package:flutter_chatgpt_app/states/settings.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:openai_api/openai_api.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -27,20 +28,28 @@ class SettingsWindow extends StatelessWidget {
     return ListView(
       children: const [
         ApiKey(),
-        Divider(),
+        Divider(
+          height: 1.0,
+        ),
         HttpProxy(),
-        Divider(),
+        Divider(
+          height: 1.0,
+        ),
         BaseUrl(),
         Divider(),
         AppTheme(),
         Divider(),
         AppLocale(),
+        Divider(),
+        ChatModel()
       ],
     );
   }
 }
 
-Future<String?> showEditDialog(TextEditingController controller, WidgetRef ref, String title, {String? text, String? hint}) async {
+Future<String?> showEditDialog(
+    TextEditingController controller, WidgetRef ref, String title,
+    {String? text, String? hint}) async {
   controller.text = text ?? '';
   return await showDialog<String?>(
       context: ref.context,
@@ -73,17 +82,18 @@ class ApiKey extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final title = L10n.of(context)!.apiKey;
-    final settings = ref.watch(settingsNotifierProvider).valueOrNull;
+    final apiKey = ref.watch(settingsNotifierProvider).valueOrNull?.apiKey;
     final controller = useTextEditingController();
     return ListTile(
       title: Text(title),
       subtitle: Text(
-        settings?.apiKey ?? '',
+        apiKey ?? '',
         style: const TextStyle(overflow: TextOverflow.ellipsis),
       ),
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () async {
-        String? text = await showEditDialog(controller, ref, title, text: settings?.apiKey, hint: L10n.of(context)!.apiKeyHint);
+        String? text = await showEditDialog(controller, ref, title,
+            text: apiKey, hint: L10n.of(context)!.apiKeyHint);
         if (text == null) return;
         if (text == '') {
           text = null;
@@ -100,17 +110,19 @@ class HttpProxy extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final title = L10n.of(context)!.httpProxy;
-    final settings = ref.watch(settingsNotifierProvider).valueOrNull;
+    final httpProxy =
+        ref.watch(settingsNotifierProvider).valueOrNull?.httpProxy;
     final controller = useTextEditingController();
     return ListTile(
       title: Text(title),
       subtitle: Text(
-        settings?.httpProxy ?? '',
+        httpProxy ?? '',
         style: const TextStyle(overflow: TextOverflow.ellipsis),
       ),
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () async {
-        String? text = await showEditDialog(controller, ref, title, text: settings?.httpProxy, hint: L10n.of(context)!.httpProxyHint);
+        String? text = await showEditDialog(controller, ref, title,
+            text: httpProxy, hint: L10n.of(context)!.httpProxyHint);
         if (text == null) return;
         if (text == '') {
           text = null;
@@ -127,17 +139,18 @@ class BaseUrl extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final title = L10n.of(context)!.baseUrl;
-    final settings = ref.watch(settingsNotifierProvider).valueOrNull;
+    final baseUrl = ref.watch(settingsNotifierProvider).valueOrNull?.baseUrl;
     final controller = useTextEditingController();
     return ListTile(
       title: Text(title),
       subtitle: Text(
-        settings?.baseUrl ?? '',
+        baseUrl ?? '',
         style: const TextStyle(overflow: TextOverflow.ellipsis),
       ),
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () async {
-        String? text = await showEditDialog(controller, ref, title, text: settings?.baseUrl, hint: 'https://openai.proxy.dev/v1');
+        String? text = await showEditDialog(controller, ref, title,
+            text: baseUrl, hint: 'https://openai.proxy.dev/v1');
         if (text == null) return;
         if (text == '') {
           text = null;
@@ -153,7 +166,9 @@ class AppTheme extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(settingsNotifierProvider).valueOrNull?.themeMode ?? ThemeMode.system;
+    final themeMode =
+        ref.watch(settingsNotifierProvider).valueOrNull?.themeMode ??
+            ThemeMode.system;
     themeChange(theme) {
       ref.read(settingsNotifierProvider.notifier).setThemeMode(theme);
       Navigator.of(ref.context).pop();
@@ -169,9 +184,21 @@ class AppTheme extends HookConsumerWidget {
               return SimpleDialog(
                 title: Text(L10n.of(context)!.themeMode),
                 children: [
-                  RadioListTile(title: Text(L10n.of(context)!.system), value: ThemeMode.system, groupValue: themeMode, onChanged: themeChange),
-                  RadioListTile(title: Text(L10n.of(context)!.light), value: ThemeMode.light, groupValue: themeMode, onChanged: themeChange),
-                  RadioListTile(title: Text(L10n.of(context)!.dark), value: ThemeMode.dark, groupValue: themeMode, onChanged: themeChange),
+                  RadioListTile(
+                      title: Text(L10n.of(context)!.system),
+                      value: ThemeMode.system,
+                      groupValue: themeMode,
+                      onChanged: themeChange),
+                  RadioListTile(
+                      title: Text(L10n.of(context)!.light),
+                      value: ThemeMode.light,
+                      groupValue: themeMode,
+                      onChanged: themeChange),
+                  RadioListTile(
+                      title: Text(L10n.of(context)!.dark),
+                      value: ThemeMode.dark,
+                      groupValue: themeMode,
+                      onChanged: themeChange),
                 ],
               );
             });
@@ -185,7 +212,7 @@ class AppLocale extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsLocale = ref.watch(settingsNotifierProvider).valueOrNull?.locale;
+    final locale = ref.watch(settingsNotifierProvider).valueOrNull?.locale;
     localeChange(locale) {
       ref.read(settingsNotifierProvider.notifier).setLocale(locale);
       Navigator.of(ref.context).pop();
@@ -201,13 +228,51 @@ class AppLocale extends HookConsumerWidget {
               return SimpleDialog(
                 title: Text(L10n.of(context)!.locale),
                 children: [
-                  RadioListTile(title: Text(L10n.of(context)!.system), value: null, groupValue: settingsLocale, onChanged: localeChange),
-                  RadioListTile(title: const Text('中文'), value: const Locale('zh'), groupValue: settingsLocale, onChanged: localeChange),
-                  RadioListTile(title: const Text('English'), value: const Locale('en'), groupValue: settingsLocale, onChanged: localeChange),
+                  RadioListTile(
+                      title: Text(L10n.of(context)!.system),
+                      value: null,
+                      groupValue: locale,
+                      onChanged: localeChange),
+                  RadioListTile(
+                      title: const Text('中文'),
+                      value: const Locale('zh'),
+                      groupValue: locale,
+                      onChanged: localeChange),
+                  RadioListTile(
+                      title: const Text('English'),
+                      value: const Locale('en'),
+                      groupValue: locale,
+                      onChanged: localeChange),
                 ],
               );
             });
       },
     );
+  }
+}
+
+class ChatModel extends HookConsumerWidget {
+  const ChatModel({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final model = ref.watch(settingsNotifierProvider).valueOrNull?.model;
+
+    return ListTile(
+        title: Text(L10n.of(context)!.model),
+        trailing: DropdownButton<String>(
+          focusColor: Colors.transparent,
+          items: [Model.gpt3_5Turbo.name, Model.gpt4.name].map((e) {
+            return DropdownMenuItem(
+              value: e,
+              child: Text(e),
+            );
+          }).toList(),
+          value: model ?? '',
+          onChanged: (String? model) {
+            if (model == null) return;
+            ref.read(settingsNotifierProvider.notifier).setModel(model);
+          },
+        ));
   }
 }

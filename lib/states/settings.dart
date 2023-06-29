@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/injection.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:openai_api/openai_api.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'settings.freezed.dart';
@@ -14,7 +15,8 @@ abstract class Settings with _$Settings {
       String? httpProxy,
       String? baseUrl,
       @Default(ThemeMode.system) ThemeMode themeMode,
-      Locale? locale}) = _Settings;
+      Locale? locale,
+      @Default('gpt-3.5-turbo') String model}) = _Settings;
 
   static Future<Settings> load() async {
     final apiKey = await localStorage.get<String>(SettingKey.apiKey.name);
@@ -23,12 +25,15 @@ abstract class Settings with _$Settings {
     final themeMode = await localStorage.get(SettingKey.themeMode.name) ??
         ThemeMode.system.index;
     final locale = await localStorage.get<String?>(SettingKey.locale.name);
+    final model = await localStorage.get<String?>(SettingKey.model.name) ??
+        Model.gpt3_5Turbo.name;
     return Settings(
         apiKey: apiKey,
         baseUrl: baseUrl,
         httpProxy: httpProxy,
         themeMode: ThemeMode.values[themeMode],
-        locale: locale == null ? null : Locale(locale));
+        locale: locale == null ? null : Locale(locale),
+        model: model);
   }
 }
 
@@ -88,6 +93,16 @@ class SettingsNotifier extends _$SettingsNotifier {
       return settings.copyWith(locale: locale);
     });
   }
+
+  Future<void> setModel(String model) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await localStorage.set(SettingKey.model.name, model);
+      final settings = state.valueOrNull ?? const Settings();
+      await chatgpt.loadConfig();
+      return settings.copyWith(model: model);
+    });
+  }
 }
 
-enum SettingKey { apiKey, httpProxy, baseUrl, themeMode, locale }
+enum SettingKey { apiKey, httpProxy, baseUrl, themeMode, locale, model }
