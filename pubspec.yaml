@@ -58,7 +58,9 @@ dependencies:
   localstorage: ^4.0.1+2
   bitsdojo_window: ^0.1.5
   windows_single_instance: ^0.1.6
-  cherry_toast: ^1.2.1
+  cherry_toast: {
+    git: https://github.com/C1oudust/Cherry-Toast.git
+  }
   file_picker: ^5.2.10
   flutter_launcher_icons: ^0.13.1
   sqlite3_flutter_libs: ^0.5.15
