@@ -27,5 +27,8 @@
   "recording": "Recording...",
   "hold": "Hold to speak",
   "input": "Input a message",
-  "error_msg": "No permission to use GPT, Please check your key or network"
+  "error_msg": "No permission to use GPT, Please check your key or network",
+  "socket_error": "network error",
+  "none_key_error": "api key is empty",
+  "key_invalid_error": "api key invalid"
 }

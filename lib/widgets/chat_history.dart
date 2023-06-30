@@ -1,5 +1,4 @@
 import 'package:cherry_toast/cherry_toast.dart';
-import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatgpt_app/injection.dart';
 import 'package:flutter_chatgpt_app/l10n/l10n.dart';
@@ -20,8 +19,7 @@ class ChatHistory extends HookConsumerWidget {
       child: state.when(
           data: (state) {
             return ListView(children: [
-              for (var session in state.sessionList)
-                ChatHistoryItemWidget(session: session),
+              for (var session in state.sessionList) ChatHistoryItemWidget(session: session),
             ]);
           },
           error: (err, stack) => Text("$err"),
@@ -36,22 +34,11 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
   final Session session;
   final controller = useTextEditingController();
 
-  showToast(Function fn, String title, BuildContext context) {
-    fn(
-      title: Text(title),
-      animationType: AnimationType.fromTop,
-      animationDuration: const Duration(milliseconds: 500),
-      toastDuration: const Duration(milliseconds: 2000),
-    ).show(context);
-  }
-
-  exportMarkdown(Session session, BuildContext context,
-      {String? filename}) async {
+  exportMarkdown(Session session, BuildContext context, {String? filename}) async {
     try {
       final res = await export.exportMarkdown(session);
       if (res) {
-        showToast(
-            CherryToast.success, L10n.of(context)!.exportSuccess, context);
+        showToast(CherryToast.success, L10n.of(context)!.exportSuccess, context);
       }
     } catch (e) {
       logger.e("export error $e");
@@ -66,101 +53,98 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
 
     return Card(
       elevation: active?.id == session.id ? 1 : 0,
+      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: ListTile(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        contentPadding: const EdgeInsets.only(left: 16.0, right: 4.0),
         title: editMode.value
             ? Row(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: 40,
-                child: TextField(
-                  controller: controller,
-                ),
-              ),
-            ),
-            IconButton(
-              iconSize: 16,
-              tooltip: L10n.of(context)!.confirm,
-              onPressed: () {
-                final text = controller.text;
-                if (text == session.title) {
-                  editMode.value = false;
-                  return;
-                }
-                if (text
-                    .trim()
-                    .isNotEmpty) {
-                  ref
-                      .read(sessionStateNotifierProvider.notifier)
-                      .upsertSesion(
-                    session.copyWith(title: text.trim()),
-                  );
-                  editMode.value = false;
-                }
-              },
-              icon: const Icon(Icons.done),
-            ),
-            IconButton(
-              iconSize: 16,
-              tooltip: L10n.of(context)!.cancel,
-              onPressed: () {
-                editMode.value = false;
-              },
-              icon: const Icon(Icons.close),
-            ),
-          ],
-        )
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 40,
+                      child: TextField(
+                        controller: controller,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    iconSize: 16,
+                    tooltip: L10n.of(context)!.confirm,
+                    onPressed: () {
+                      final text = controller.text;
+                      if (text == session.title) {
+                        editMode.value = false;
+                        return;
+                      }
+                      if (text.trim().isNotEmpty) {
+                        ref.read(sessionStateNotifierProvider.notifier).upsertSesion(
+                              session.copyWith(title: text.trim()),
+                            );
+                        editMode.value = false;
+                      }
+                    },
+                    icon: const Icon(Icons.done),
+                  ),
+                  IconButton(
+                    iconSize: 16,
+                    tooltip: L10n.of(context)!.cancel,
+                    onPressed: () {
+                      editMode.value = false;
+                    },
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              )
             : Row(
-          children: [
-            Expanded(
-              child: Text(
-                session.title,
-                style: const TextStyle(overflow: TextOverflow.ellipsis),
+                children: [
+                  Expanded(
+                    child: Text(
+                      session.title,
+                      style: const TextStyle(overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
+                  active?.id == session.id
+                      ? IconButton(
+                          iconSize: 16,
+                          tooltip: L10n.of(context)!.rename,
+                          onPressed: () {
+                            controller.text = session.title;
+                            editMode.value = true;
+                          },
+                          icon: const Icon(
+                            Icons.edit,
+                            size: 16,
+                          ),
+                        )
+                      : Container(),
+                  IconButton(
+                    iconSize: 16,
+                    tooltip: L10n.of(context)!.export,
+                    onPressed: () {
+                      if (active != null) {
+                        exportMarkdown(session, context);
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.ios_share,
+                    ),
+                  ),
+                  IconButton(
+                    iconSize: 16,
+                    tooltip: L10n.of(context)!.delete,
+                    onPressed: () {
+                      _deleteConfirm(context, ref, session);
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            active?.id == session.id
-                ? IconButton(
-              iconSize: 16,
-              tooltip: L10n.of(context)!.rename,
-              onPressed: () {
-                controller.text = session.title;
-                editMode.value = true;
-              },
-              icon: const Icon(
-                Icons.edit,
-                size: 16,
-              ),
-            )
-                : Container(),
-            IconButton(
-              iconSize: 16,
-              tooltip: L10n.of(context)!.export,
-              onPressed: () {
-                if (active != null) {
-                  exportMarkdown(session, context);
-                }
-              },
-              icon: const Icon(
-                Icons.ios_share,
-              ),
-            ),
-            IconButton(
-              iconSize: 16,
-              tooltip: L10n.of(context)!.delete,
-              onPressed: () {
-                _deleteConfirm(context, ref, session);
-              },
-              icon: const Icon(
-                Icons.delete,
-              ),
-            ),
-          ],
-        ),
         onTap: () {
-          ref
-              .read(sessionStateNotifierProvider.notifier)
-              .setActiveSession(session);
+          if (active?.id == session.id) return;
+          ref.read(sessionStateNotifierProvider.notifier).setActiveSession(session);
           if (!isDesktop()) {
             Navigator.of(context).pop();
           }
@@ -171,8 +155,7 @@ class ChatHistoryItemWidget extends HookConsumerWidget {
   }
 }
 
-Future _deleteConfirm(BuildContext context, WidgetRef ref,
-    Session session) async {
+Future _deleteConfirm(BuildContext context, WidgetRef ref, Session session) async {
   return showDialog(
       context: context,
       builder: (context) {
@@ -188,9 +171,7 @@ Future _deleteConfirm(BuildContext context, WidgetRef ref,
             ),
             TextButton(
               onPressed: () {
-                ref
-                    .read(sessionStateNotifierProvider.notifier)
-                    .deleteSession(session);
+                ref.read(sessionStateNotifierProvider.notifier).deleteSession(session);
                 Navigator.of(context).pop();
               },
               child: Text(L10n.of(context)!.confirm),

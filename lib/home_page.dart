@@ -34,34 +34,42 @@ class DesktopHomeScreen extends StatelessWidget {
             child: Column(
               children: [
                 const Padding(
-                  padding: EdgeInsets.only(top: 24, bottom: 8.0),
+                  padding: EdgeInsets.only(top: 24),
                   child: NewChatBtn(),
                 ),
                 const Expanded(child: ChatHistory()),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: Text(L10n.of(context)!.settings),
-                  onTap: () async {
-                    return await showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            contentPadding: const EdgeInsets.all(0),
-                            title: Text(L10n.of(context)!.settings),
-                            content: SizedBox(
-                              width: 400,
-                              height: 420,
-                              child: SettingsWindow(),
-                            ),
-                          );
-                        });
-                  },
+                const Divider(
+                  height: 1.0,
+                ),
+                Material(
+                  child: ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: Text(L10n.of(context)!.settings),
+                    onTap: () async {
+                      return await showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(L10n.of(context)!.settings),
+                              content: SizedBox(
+                                width: 400,
+                                height: 420,
+                                child: SettingsWindow(),
+                              ),
+                            );
+                          });
+                    },
+                  ),
                 )
               ],
             ),
           ),
-          const Expanded(child: ChatScreen())
+          const Expanded(
+              child: Padding(
+            padding: EdgeInsets.only(top: 32.0),
+            child: ChatScreen(),
+          ))
         ],
       )),
     );
@@ -85,9 +93,7 @@ class MobileHomeScreen extends HookConsumerWidget {
           // ),
           IconButton(
             onPressed: () {
-              ref
-                  .read(sessionStateNotifierProvider.notifier)
-                  .setActiveSession(null);
+              ref.read(sessionStateNotifierProvider.notifier).setActiveSession(null);
             },
             icon: const Icon(Icons.add),
           ),
@@ -99,8 +105,7 @@ class MobileHomeScreen extends HookConsumerWidget {
         ],
       ),
       drawer: Drawer(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
           child: Text(

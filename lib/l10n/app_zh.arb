@@ -27,5 +27,8 @@
   "recording": "录音中...",
   "hold": "按下录音",
   "input": "输入信息",
-  "error_msg": "暂无 GPT 使用权限，请检查您的 API Key 或网络"
+  "error_msg": "暂无 GPT 使用权限，请检查您的 API Key 或网络",
+  "socket_error": "网络连接错误",
+  "none_key_error": "未填写api key",
+  "key_invalid_error": "api key无效"
 }

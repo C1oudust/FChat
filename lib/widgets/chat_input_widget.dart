@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chatgpt_app/injection.dart';
@@ -8,7 +11,7 @@ import 'package:flutter_chatgpt_app/states/chat_ui.dart';
 import 'package:flutter_chatgpt_app/states/message.dart';
 import 'package:flutter_chatgpt_app/states/session.dart';
 import 'package:flutter_chatgpt_app/states/settings.dart';
-import 'package:flutter_chatgpt_app/widgets/chat_screen.dart';
+import 'package:flutter_chatgpt_app/utils.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:openai_api/openai_api.dart';
@@ -35,8 +38,7 @@ class ChatInputWidget extends HookConsumerWidget {
               voiceMode.value ? Icons.keyboard : Icons.keyboard_voice,
             ),
           ),
-          Expanded(
-              child: voiceMode.value ? const AudioInput() : ChatMessageInput()),
+          Expanded(child: voiceMode.value ? const AudioInput() : ChatMessageInput()),
         ],
       ),
     );
@@ -54,11 +56,7 @@ class AudioInput extends HookConsumerWidget {
     return chatUIState.requestLoading || transcripting.value
         ? SizedBox(
             height: 36,
-            child: ElevatedButton(
-                onPressed: null,
-                child: Text(transcripting.value
-                    ? L10n.of(context)!.transcripting
-                    : L10n.of(context)!.loading)),
+            child: ElevatedButton(onPressed: null, child: Text(transcripting.value ? L10n.of(context)!.transcripting : L10n.of(context)!.loading)),
           )
         : GestureDetector(
             onLongPressStart: (details) {
@@ -90,9 +88,7 @@ class AudioInput extends HookConsumerWidget {
             },
             child: ElevatedButton(
               onPressed: () {},
-              child: Text(recording.value
-                  ? L10n.of(context)!.recording
-                  : L10n.of(context)!.hold),
+              child: Text(recording.value ? L10n.of(context)!.recording : L10n.of(context)!.hold),
             ),
           );
   }
@@ -166,25 +162,22 @@ _requestChatGPT(WidgetRef ref, String content, {int? sessionId}) async {
   ref.read(chatUiProvider.notifier).setRequestLoading(true);
   final model = ref.watch(settingsNotifierProvider).valueOrNull?.model;
   final messages = ref.watch(activeSessionMessagesProvider);
-  final activeSession = ref.watch(activeSessionProvider);
   try {
     // final res = await chatgpt.sendChat(content);
     // final text = res.choices.first.message?.content ?? "";
     // final message = Message(id: uuid.v4(), content: text, isUser: false, timestamp: DateTime.now());
     // ref.read(messageProvider.notifier).addMessage(message);
     final id = uuid.v4();
-    await chatgpt.streamChat(messages,
-        model: activeSession?.model.toModel() ?? Model.values.firstWhere((e) => e.name == model),
-        onSuccess: (text) {
-      final message =
-          _createMessage(text, id: id, isUser: false, sessionId: sessionId);
+    await chatgpt.streamChat(messages, model: Model.values.firstWhere((e) => e.name == model), onSuccess: (text) {
+      final message = _createMessage(text, id: id, isUser: false, sessionId: sessionId);
       ref.read(messageProvider.notifier).upsertMessage(message);
     });
+  } on SocketException {
+    showToast(CherryToast.success, L10n.of(ref.context)!.socket_error, ref.context);
   } catch (err) {
     final id = uuid.v4();
     logger.e("request chatgpt error: $err", err);
-    final message = _createMessage(L10n.of(ref.context)!.error_msg,
-        id: id, isUser: false, sessionId: sessionId);
+    final message = _createMessage(L10n.of(ref.context)!.error_msg, id: id, isUser: false, sessionId: sessionId);
     ref.read(messageProvider.notifier).upsertMessage(message);
   } finally {
     ref.read(chatUiProvider.notifier).setRequestLoading(false);
@@ -201,18 +194,13 @@ __sendMessage(WidgetRef ref, String content) async {
   if (content.isEmpty) return;
   Message message = _createMessage(content);
 
-  final uiState = ref.watch(chatUiProvider);
   var active = ref.watch(activeSessionProvider);
   var sessionId = active?.id ?? 0;
   if (sessionId <= 0) {
-    active = Session(title: content, model: uiState.model.value);
-    active = await ref
-        .read(sessionStateNotifierProvider.notifier)
-        .upsertSesion(active);
+    active = Session(title: content.length > 10 ? content.substring(0, 10) : content);
+    active = await ref.read(sessionStateNotifierProvider.notifier).upsertSesion(active);
     sessionId = active.id!;
-    ref
-        .read(sessionStateNotifierProvider.notifier)
-        .setActiveSession(active.copyWith(id: sessionId));
+    ref.read(sessionStateNotifierProvider.notifier).setActiveSession(active.copyWith(id: sessionId));
   }
   ref.read(messageProvider.notifier).upsertMessage(
         message.copyWith(sessionId: sessionId),

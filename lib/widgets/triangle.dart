@@ -9,9 +9,9 @@ class Triangle extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     var paint = Paint()..color = bgColor;
     var path = Path();
-    path.lineTo(-5, 0);
+    path.lineTo(-6, 0);
     path.lineTo(0, 10);
-    path.lineTo(5, 0);
+    path.lineTo(6, 0);
     path.close();
     canvas.drawPath(path, paint);
   }
