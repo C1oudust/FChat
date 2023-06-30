@@ -173,7 +173,7 @@ _requestChatGPT(WidgetRef ref, String content, {int? sessionId}) async {
       ref.read(messageProvider.notifier).upsertMessage(message);
     });
   } on SocketException {
-    showToast(CherryToast.success, L10n.of(ref.context)!.socket_error, ref.context);
+    showToast(CherryToast.error, L10n.of(ref.context)!.socket_error, ref.context);
   } catch (err) {
     final id = uuid.v4();
     logger.e("request chatgpt error: $err", err);
